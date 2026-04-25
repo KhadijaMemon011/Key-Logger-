@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KeyGuard — Keylogger Detector Simulation</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── CSS Variables ─────────────────────────────────────────── */
+    :root {
+      --bg:        #060a0f;
+      --surface:   #0d1117;
+      --card:      #111820;
+      --border:    #1c2a38;
+      --green:     #00ff88;
+      --green-dim: #00cc6a;
+      --red:       #ff2d55;
+      --red-dim:   #c41f3e;
+      --yellow:    #ffd200;
+      --cyan:      #00d4ff;
+      --text:      #c8d8e8;
+      --muted:     #4a6070;
+      --font-mono: 'Share Tech Mono', monospace;
+      --font-ui:   'Exo 2', sans-serif;
+      --font-head: 'Orbitron', sans-serif;
+    }
+
+    /* ─── Reset & Base ──────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-ui);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Scanline overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,255,136,0.015) 2px,
+        rgba(0,255,136,0.015) 4px
+      );
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    /* Grid background */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ─── Layout ─────────────────────────────────────────────────── */
+    .wrapper {
+      position: relative;
+      z-index: 1;
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 4rem;
+    }
+
+    /* ─── Header ─────────────────────────────────────────────────── */
+    header {
+      text-align: center;
+      padding: 2.5rem 0 2rem;
+    }
+
+    .logo {
+      font-family: var(--font-head);
+      font-size: clamp(1.8rem, 5vw, 3rem);
+      font-weight: 900;
+      letter-spacing: 4px;
+      color: var(--green);
+      text-shadow: 0 0 20px rgba(0,255,136,0.5), 0 0 60px rgba(0,255,136,0.2);
+      animation: flicker 8s infinite;
+    }
+
+    .logo span { color: var(--cyan); }
+
+    .tagline {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--muted);
+      letter-spacing: 3px;
+      margin-top: 0.5rem;
+      text-transform: uppercase;
+    }
+
+    .edu-badge {
+      display: inline-block;
+      margin-top: 1rem;
+      padding: 0.3rem 1rem;
+      border: 1px solid var(--yellow);
+      color: var(--yellow);
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      letter-spacing: 2px;
+      border-radius: 2px;
+      animation: pulse-yellow 3s ease-in-out infinite;
+    }
+
+    /* ─── Cards ──────────────────────────────────────────────────── */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--green), transparent);
+      opacity: 0.4;
+    }
+
+    .card-title {
+      font-family: var(--font-head);
+      font-size: 0.65rem;
+      letter-spacing: 3px;
+      color: var(--green);
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .card-title .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 6px var(--green);
+    }
+
+    /* ─── Control Bar ─────────────────────────────────────────────── */
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+      align-items: center;
+    }
+
+    /* Toggle Switch */
+    .toggle-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex: 1;
+      min-width: 220px;
+    }
+
+    .toggle-label {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--text);
+      white-space: nowrap;
+    }
+
+    .switch {
+      position: relative;
+      width: 54px;
+      height: 28px;
+      flex-shrink: 0;
+    }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider {
+      position: absolute;
+      inset: 0;
+      background: #1a2530;
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      cursor: pointer;
+      transition: background 0.3s, border-color 0.3s;
+    }
+    .slider::before {
+      content: '';
+      position: absolute;
+      width: 20px; height: 20px;
+      left: 3px; top: 3px;
+      background: var(--muted);
+      border-radius: 50%;
+      transition: transform 0.3s, background 0.3s, box-shadow 0.3s;
+    }
+    .switch input:checked + .slider { background: rgba(255,45,85,0.15); border-color: var(--red); }
+    .switch input:checked + .slider::before {
+      transform: translateX(26px);
+      background: var(--red);
+      box-shadow: 0 0 10px var(--red);
+    }
+
+    /* Mode badge */
+    .mode-badge {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 2px;
+      border: 1px solid transparent;
+      letter-spacing: 1px;
+      transition: all 0.3s;
+    }
+    .mode-badge.safe    { border-color: var(--green); color: var(--green); }
+    .mode-badge.attack  { border-color: var(--red); color: var(--red); animation: pulse-red 1s ease-in-out infinite; }
+
+    /* Buttons */
+    .btn {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      letter-spacing: 1px;
+      padding: 0.5rem 1.2rem;
+      border-radius: 2px;
+      border: 1px solid;
+      cursor: pointer;
+      background: transparent;
+      transition: all 0.2s;
+      text-transform: uppercase;
+    }
+    .btn-green { border-color: var(--green); color: var(--green); }
+    .btn-green:hover { background: var(--green); color: var(--bg); box-shadow: 0 0 20px rgba(0,255,136,0.3); }
+    .btn-red   { border-color: var(--red); color: var(--red); }
+    .btn-red:hover   { background: var(--red); color: #fff; box-shadow: 0 0 20px rgba(255,45,85,0.3); }
+    .btn-cyan  { border-color: var(--cyan); color: var(--cyan); }
+    .btn-cyan:hover  { background: var(--cyan); color: var(--bg); box-shadow: 0 0 20px rgba(0,212,255,0.3); }
+
+    /* ─── Typing Area ─────────────────────────────────────────────── */
+    .typing-area {
+      width: 100%;
+      background: #08111a;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      color: var(--green);
+      font-family: var(--font-mono);
+      font-size: 1rem;
+      line-height: 1.7;
+      padding: 1rem;
+      resize: vertical;
+      min-height: 120px;
+      outline: none;
+      caret-color: var(--green);
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    .typing-area:focus {
+      border-color: var(--green-dim);
+      box-shadow: 0 0 0 2px rgba(0,255,136,0.1), inset 0 0 20px rgba(0,255,136,0.03);
+    }
+    .typing-area.compromised {
+      border-color: var(--red);
+      box-shadow: 0 0 0 2px rgba(255,45,85,0.1), inset 0 0 20px rgba(255,45,85,0.05);
+      caret-color: var(--red);
+    }
+    .typing-area::placeholder { color: var(--muted); }
+
+    /* ─── Stats Row ───────────────────────────────────────────────── */
+    .stats-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 0.75rem;
+    }
+
+    .stat-pill {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      padding: 0.3rem 0.75rem;
+      background: #0a1520;
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .stat-pill .label { color: var(--muted); }
+    .stat-pill .value { color: var(--cyan); font-weight: 600; }
+    .stat-pill .value.danger { color: var(--red); }
+
+    /* ─── Visualization Panel ─────────────────────────────────────── */
+    .viz-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    @media (max-width: 600px) { .viz-grid { grid-template-columns: 1fr; } }
+
+    .viz-box {
+      background: #08111a;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 0.75rem;
+      min-height: 90px;
+    }
+
+    .viz-box-title {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      letter-spacing: 2px;
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+    }
+    .viz-box-title.user   { color: var(--green); }
+    .viz-box-title.hidden { color: var(--red); }
+
+    .viz-content {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      word-break: break-all;
+      min-height: 40px;
+      line-height: 1.6;
+    }
+    .viz-content.user-text   { color: var(--green-dim); }
+    .viz-content.hidden-text { color: var(--red); }
+    .viz-content.empty-state { color: var(--muted); font-size: 0.7rem; }
+
+    .key-chip {
+      display: inline-block;
+      background: rgba(255,45,85,0.12);
+      border: 1px solid rgba(255,45,85,0.3);
+      border-radius: 3px;
+      padding: 0 4px;
+      margin: 1px;
+      font-size: 0.72rem;
+      animation: chip-in 0.15s ease;
+    }
+
+    @keyframes chip-in {
+      from { opacity: 0; transform: scale(0.8); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    /* ─── Alert Box ───────────────────────────────────────────────── */
+    .alert-box {
+      display: none;
+      background: rgba(255,45,85,0.05);
+      border: 1px solid var(--red);
+      border-radius: 4px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.5rem;
+      position: relative;
+      overflow: hidden;
+      animation: alert-in 0.4s ease;
+    }
+
+    .alert-box.show { display: block; }
+
+    .alert-box::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 10px,
+        rgba(255,45,85,0.03) 10px,
+        rgba(255,45,85,0.03) 20px
+      );
+      pointer-events: none;
+    }
+
+    .alert-title {
+      font-family: var(--font-head);
+      font-size: 0.8rem;
+      color: var(--red);
+      letter-spacing: 2px;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .alert-blink { animation: blink 0.8s step-end infinite; }
+
+    .alert-body {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: #e86a7a;
+      line-height: 1.6;
+    }
+
+    /* ─── Speed Meter ─────────────────────────────────────────────── */
+    .speed-bar-wrap {
+      margin-top: 0.5rem;
+    }
+    .speed-bar-label {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      color: var(--muted);
+      margin-bottom: 0.3rem;
+    }
+    .speed-bar-track {
+      height: 6px;
+      background: #0a1520;
+      border-radius: 6px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .speed-bar-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 6px;
+      background: linear-gradient(90deg, var(--green), var(--cyan));
+      transition: width 0.3s ease, background 0.3s;
+    }
+    .speed-bar-fill.fast { background: linear-gradient(90deg, var(--yellow), var(--red)); }
+
+    /* ─── Education Section ───────────────────────────────────────── */
+    .edu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 1rem;
+      margin-top: 0.5rem;
+    }
+
+    .edu-item {
+      background: #08111a;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 1rem;
+    }
+
+    .edu-item-icon {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .edu-item-title {
+      font-family: var(--font-head);
+      font-size: 0.65rem;
+      letter-spacing: 2px;
+      color: var(--cyan);
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+    }
+
+    .edu-item-body {
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .protect-list {
+      list-style: none;
+      margin-top: 0.5rem;
+    }
+
+    .protect-list li {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--green-dim);
+      padding: 0.2rem 0;
+      display: flex;
+      gap: 0.4rem;
+    }
+    .protect-list li::before { content: '>'; color: var(--muted); }
+
+    /* ─── Log Terminal ─────────────────────────────────────────────── */
+    .terminal {
+      background: #05090e;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 0.75rem;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      max-height: 140px;
+      overflow-y: auto;
+      line-height: 1.7;
+    }
+
+    .terminal::-webkit-scrollbar { width: 4px; }
+    .terminal::-webkit-scrollbar-track { background: transparent; }
+    .terminal::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+    .log-line { display: flex; gap: 0.5rem; }
+    .log-time { color: var(--muted); flex-shrink: 0; }
+    .log-msg.info   { color: var(--cyan); }
+    .log-msg.warn   { color: var(--yellow); }
+    .log-msg.danger { color: var(--red); }
+    .log-msg.ok     { color: var(--green); }
+
+    /* ─── Animations ──────────────────────────────────────────────── */
+    @keyframes flicker {
+      0%,95%,100% { opacity: 1; }
+      96% { opacity: 0.85; }
+      97% { opacity: 1; }
+      98% { opacity: 0.7; }
+    }
+
+    @keyframes pulse-yellow {
+      0%,100% { box-shadow: 0 0 5px rgba(255,210,0,0.2); }
+      50%      { box-shadow: 0 0 15px rgba(255,210,0,0.5); }
+    }
+
+    @keyframes pulse-red {
+      0%,100% { opacity: 1; }
+      50%      { opacity: 0.6; }
+    }
+
+    @keyframes alert-in {
+      from { transform: translateY(-8px); opacity: 0; }
+      to   { transform: translateY(0);   opacity: 1; }
+    }
+
+    @keyframes blink {
+      0%,100% { opacity: 1; }
+      50%      { opacity: 0; }
+    }
+
+    /* ─── Footer ──────────────────────────────────────────────────── */
+    footer {
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--muted);
+      letter-spacing: 2px;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+<body>
+
+<div class="wrapper">
+
+  <!-- ── HEADER ──────────────────────────────────────────────────── -->
+  <header>
+    <div class="logo">KEY<span>GUARD</span></div>
+    <div class="tagline">Keylogger Detector · Educational Simulation</div>
+    <div class="edu-badge">⚠ SIMULATION ONLY — NO REAL MALWARE — BROWSER MEMORY ONLY</div>
+  </header>
+
+  <!-- ── ALERT BOX ───────────────────────────────────────────────── -->
+  <div class="alert-box" id="alertBox">
+    <div class="alert-title">
+      <span class="alert-blink">■</span>
+      ⚠ POTENTIAL KEYLOGGER ACTIVITY DETECTED
+    </div>
+    <div class="alert-body" id="alertBody">
+      Suspicious keystroke capture behavior has been identified.
+    </div>
+  </div>
+
+  <!-- ── CONTROLS ────────────────────────────────────────────────── -->
+  <div class="card">
+    <div class="card-title"><span class="dot"></span> System Control Panel</div>
+    <div class="controls">
+      <!-- Keylogger toggle -->
+      <div class="toggle-wrap">
+        <span class="toggle-label">Keylogger Sim:</span>
+        <label class="switch">
+          <input type="checkbox" id="toggleKL" />
+          <span class="slider"></span>
+        </label>
+        <span class="mode-badge safe" id="modeBadge">SAFE MODE</span>
+      </div>
+
+      <!-- Action buttons -->
+      <button class="btn btn-cyan" id="detectBtn">⚡ Run Detection</button>
+      <button class="btn btn-green" id="resetBtn">↺ Reset All</button>
+    </div>
+
+    <!-- Speed bar -->
+    <div class="speed-bar-wrap">
+      <div class="speed-bar-label">Typing Speed: <span id="wpmDisplay">0 WPM</span> &nbsp;|&nbsp; Keystroke Velocity: <span id="ksDisplay">0 ks/s</span></div>
+      <div class="speed-bar-track">
+        <div class="speed-bar-fill" id="speedBar"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── INPUT AREA ──────────────────────────────────────────────── -->
+  <div class="card">
+    <div class="card-title"><span class="dot"></span> User Input Terminal</div>
+    <textarea
+      class="typing-area"
+      id="inputArea"
+      placeholder="// Start typing here... keystrokes are monitored in simulation mode"
+      rows="5"
+    ></textarea>
+
+    <!-- Stats pills -->
+    <div class="stats-row">
+      <div class="stat-pill"><span class="label">chars:</span><span class="value" id="charCount">0</span></div>
+      <div class="stat-pill"><span class="label">words:</span><span class="value" id="wordCount">0</span></div>
+      <div class="stat-pill"><span class="label">captured:</span><span class="value danger" id="capturedCount">0</span></div>
+      <div class="stat-pill"><span class="label">rapid bursts:</span><span class="value danger" id="burstCount">0</span></div>
+    </div>
+  </div>
+
+  <!-- ── VISUALIZATION PANEL ─────────────────────────────────────── -->
+  <div class="card">
+    <div class="card-title"><span class="dot"></span> Live Comparison — What You See vs What's Captured</div>
+    <div class="viz-grid">
+
+      <!-- What user sees -->
+      <div class="viz-box">
+        <div class="viz-box-title user">✓ What You See (Visible Input)</div>
+        <div class="viz-content user-text" id="visibleLog">
+          <span class="empty-state">// Waiting for input...</span>
+        </div>
+      </div>
+
+      <!-- Hidden keylogger array -->
+      <div class="viz-box">
+        <div class="viz-box-title hidden">⚑ What System Secretly Recorded [SIMULATION]</div>
+        <div class="viz-content hidden-text" id="hiddenLog">
+          <span class="empty-state">// Simulation disabled — toggle to enable</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── ACTIVITY LOG ─────────────────────────────────────────────── -->
+  <div class="card">
+    <div class="card-title"><span class="dot"></span> Security Activity Log</div>
+    <div class="terminal" id="logTerminal">
+      <div class="log-line"><span class="log-time">[00:00:00]</span><span class="log-msg ok">System initialized. Safe mode active.</span></div>
+    </div>
+  </div>
+
+  <!-- ── EDUCATION SECTION ────────────────────────────────────────── -->
+  <div class="card">
+    <div class="card-title"><span class="dot"></span> Educational Reference — Understanding Keyloggers</div>
+    <div class="edu-grid">
+
+      <div class="edu-item">
+        <div class="edu-item-icon">🔍</div>
+        <div class="edu-item-title">What is a Keylogger?</div>
+        <div class="edu-item-body">
+          A keylogger is software (or hardware) that secretly records every keystroke you make.
+          Attackers use them to steal passwords, credit card numbers, and private messages —
+          all without your knowledge.
+        </div>
+      </div>
+
+      <div class="edu-item">
+        <div class="edu-item-icon">☠️</div>
+        <div class="edu-item-title">Why Are They Dangerous?</div>
+        <div class="edu-item-body">
+          Keyloggers silently operate in the background. By the time you notice, your
+          banking credentials, emails, and personal data may already be in criminal hands.
+          They're often bundled with legitimate-looking software.
+        </div>
+      </div>
+
+      <div class="edu-item">
+        <div class="edu-item-icon">🛡️</div>
+        <div class="edu-item-title">How to Protect Yourself</div>
+        <ul class="protect-list">
+          <li>Install reputable antivirus / anti-malware</li>
+          <li>Keep OS and software updated</li>
+          <li>Use a password manager (avoids typing passwords)</li>
+          <li>Enable two-factor authentication (2FA)</li>
+          <li>Avoid suspicious downloads and email attachments</li>
+          <li>Use virtual keyboards for sensitive fields</li>
+          <li>Regularly scan for malware</li>
+        </ul>
+      </div>
+
+      <div class="edu-item">
+        <div class="edu-item-icon">🔬</div>
+        <div class="edu-item-title">How This Simulation Works</div>
+        <div class="edu-item-body">
+          This demo mimics keylogger behavior entirely inside your browser's memory —
+          nothing leaves your device. It illustrates how covert keystroke logging
+          could look from a security monitoring perspective. No actual malicious
+          code is used here.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <footer>KEYGUARD SIMULATOR &nbsp;·&nbsp; BY KHADIJA MEMON &nbsp;·&nbsp; © 2026</footer>
+</div>
+
+<script>
+  /* ═══════════════════════════════════════════════════════════════
+     KeyGuard — Keylogger Detector Simulation
+     Everything runs in browser memory. No data leaves the device.
+     This is an educational tool only.
+  ═══════════════════════════════════════════════════════════════ */
+
+  // ── State ──────────────────────────────────────────────────────
+  const state = {
+    keyloggerActive: false,   // Is simulation running?
+    hiddenLog: [],            // Simulated covert capture array
+    keyTimestamps: [],        // For keystroke velocity detection
+    burstCount: 0,            // Times rapid typing exceeded threshold
+    startTime: null,          // Session start for WPM
+    totalKeystrokes: 0,       // Total keys pressed
+  };
+
+  // Thresholds for detection
+  const BURST_WINDOW_MS   = 500;   // Time window to check burst
+  const BURST_THRESHOLD   = 8;    // Keys in window = suspicious
+  const CAPTURE_WARN_AT   = 5;    // Captured keys before first warning
+
+  // ── DOM Refs ───────────────────────────────────────────────────
+  const toggleKL      = document.getElementById('toggleKL');
+  const modeBadge     = document.getElementById('modeBadge');
+  const detectBtn     = document.getElementById('detectBtn');
+  const resetBtn      = document.getElementById('resetBtn');
+  const inputArea     = document.getElementById('inputArea');
+  const alertBox      = document.getElementById('alertBox');
+  const alertBody     = document.getElementById('alertBody');
+  const visibleLog    = document.getElementById('visibleLog');
+  const hiddenLog     = document.getElementById('hiddenLog');
+  const logTerminal   = document.getElementById('logTerminal');
+  const charCount     = document.getElementById('charCount');
+  const wordCount     = document.getElementById('wordCount');
+  const capturedCount = document.getElementById('capturedCount');
+  const burstCountEl  = document.getElementById('burstCount');
+  const speedBar      = document.getElementById('speedBar');
+  const wpmDisplay    = document.getElementById('wpmDisplay');
+  const ksDisplay     = document.getElementById('ksDisplay');
+
+  // ── Utilities ──────────────────────────────────────────────────
+
+  /** Format current time as HH:MM:SS */
+  function timestamp() {
+    const n = new Date();
+    return [n.getHours(), n.getMinutes(), n.getSeconds()]
+      .map(v => String(v).padStart(2, '0')).join(':');
+  }
+
+  /** Append a line to the activity log terminal */
+  function addLog(msg, type = 'info') {
+    const line = document.createElement('div');
+    line.className = 'log-line';
+    line.innerHTML = `<span class="log-time">[${timestamp()}]</span><span class="log-msg ${type}">${msg}</span>`;
+    logTerminal.appendChild(line);
+    logTerminal.scrollTop = logTerminal.scrollHeight;
+  }
+
+  /** Show the alert box with a specific message */
+  function showAlert(msg) {
+    alertBody.textContent = msg;
+    alertBox.classList.add('show');
+  }
+
+  /** Hide the alert box */
+  function hideAlert() {
+    alertBox.classList.remove('show');
+  }
+
+  /** Update the visible visualization panel */
+  function updateVisibleLog() {
+    const text = inputArea.value;
+    if (!text) {
+      visibleLog.innerHTML = '<span class="empty-state">// Waiting for input...</span>';
+    } else {
+      visibleLog.textContent = text;
+    }
+  }
+
+  /** Update the hidden (simulated capture) visualization */
+  function updateHiddenLog() {
+    if (!state.keyloggerActive || state.hiddenLog.length === 0) {
+      hiddenLog.innerHTML = state.keyloggerActive
+        ? '<span class="empty-state">// Listening... start typing</span>'
+        : '<span class="empty-state">// Simulation disabled — toggle to enable</span>';
+      return;
+    }
+    // Display each captured key as a chip
+    hiddenLog.innerHTML = state.hiddenLog.map(k => `<span class="key-chip">${escapeHTML(k)}</span>`).join('');
+  }
+
+  /** Escape HTML to safely display key characters */
+  function escapeHTML(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  /** Update stats pills */
+  function updateStats() {
+    const text = inputArea.value;
+    charCount.textContent     = text.length;
+    wordCount.textContent     = text.trim() ? text.trim().split(/\s+/).length : 0;
+    capturedCount.textContent = state.hiddenLog.length;
+    burstCountEl.textContent  = state.burstCount;
+  }
+
+  /** Update WPM and keystroke speed bar */
+  function updateSpeedMeter() {
+    if (!state.startTime || state.totalKeystrokes === 0) {
+      wpmDisplay.textContent = '0 WPM';
+      ksDisplay.textContent  = '0 ks/s';
+      speedBar.style.width   = '0%';
+      speedBar.classList.remove('fast');
+      return;
+    }
+
+    // WPM estimate: keystrokes / 5 chars per word / elapsed minutes
+    const elapsedMin = (Date.now() - state.startTime) / 60000;
+    const wpm = Math.round((state.totalKeystrokes / 5) / elapsedMin);
+
+    // Keystroke velocity in last second
+    const now = Date.now();
+    const recentKeys = state.keyTimestamps.filter(t => now - t < 1000).length;
+
+    wpmDisplay.textContent = `${wpm} WPM`;
+    ksDisplay.textContent  = `${recentKeys} ks/s`;
+
+    // Speed bar fill (0–100% maps to 0–100 WPM)
+    const pct = Math.min(wpm, 100);
+    speedBar.style.width = `${pct}%`;
+    speedBar.classList.toggle('fast', wpm > 60);
+  }
+
+  // ── Detection Engine ───────────────────────────────────────────
+
+  /**
+   * Core detection logic.
+   * Checks three conditions:
+   *  1. Hidden capture array is active and growing (covert recording)
+   *  2. Keystroke burst rate exceeded threshold (rapid, suspicious capture)
+   *  3. Large divergence between what user sees and what was captured
+   */
+  function runDetection() {
+    const issues = [];
+
+    // Check 1: Covert capture is running
+    if (state.keyloggerActive && state.hiddenLog.length >= CAPTURE_WARN_AT) {
+      issues.push(`Hidden keystroke buffer contains ${state.hiddenLog.length} captured characters with no user notification.`);
+    }
+
+    // Check 2: Burst typing detected
+    if (state.burstCount > 0) {
+      issues.push(`Rapid keystroke bursts detected: ${state.burstCount} event(s). Rate exceeds normal typing velocity.`);
+    }
+
+    // Check 3: Silent logging while user sees normal UI
+    if (state.keyloggerActive && state.hiddenLog.length > 0) {
+      issues.push(`Keylogger simulation is active. All keystrokes are being covertly recorded in background memory.`);
+    }
+
+    if (issues.length > 0) {
+      showAlert(issues.join(' | '));
+      addLog('⚠ THREAT DETECTED: ' + issues[0], 'danger');
+      issues.slice(1).forEach(i => addLog('  └─ ' + i, 'warn'));
+    } else {
+      hideAlert();
+      addLog('✓ Scan complete. No suspicious activity found.', 'ok');
+    }
+  }
+
+  // ── Event Handlers ─────────────────────────────────────────────
+
+  /**
+   * Keydown handler — fires for every key press on the textarea.
+   * In keylogger mode: covertly stores the key in hiddenLog array.
+   * Always: tracks timing for burst detection.
+   */
+  inputArea.addEventListener('keydown', function(e) {
+    // Don't track modifier-only keys
+    if (['Shift','Control','Alt','Meta','CapsLock','Tab'].includes(e.key)) return;
+
+    // Set session start on first key
+    if (!state.startTime) state.startTime = Date.now();
+    state.totalKeystrokes++;
+
+    const now = Date.now();
+    state.keyTimestamps.push(now);
+
+    // Keep only recent timestamps (last 2 seconds)
+    while (state.keyTimestamps.length && now - state.keyTimestamps[0] > 2000) {
+      state.keyTimestamps.shift();
+    }
+
+    // ── Burst detection ──────────────────────────────────
+    const recentBurst = state.keyTimestamps.filter(t => now - t < BURST_WINDOW_MS).length;
+    if (recentBurst >= BURST_THRESHOLD) {
+      state.burstCount++;
+      addLog(`⚡ Rapid burst detected: ${recentBurst} keys in ${BURST_WINDOW_MS}ms`, 'warn');
+      if (state.keyloggerActive) {
+        showAlert(`Rapid keystroke burst (${recentBurst} keys/${BURST_WINDOW_MS}ms) recorded by hidden logger. This pattern is characteristic of automated input capture.`);
+      }
+    }
+
+    // ── Covert capture (keylogger simulation) ────────────
+    if (state.keyloggerActive) {
+      // Format key label nicely for display
+      const label = e.key.length === 1 ? e.key : `[${e.key}]`;
+      state.hiddenLog.push(label);
+
+      // Trigger warning when threshold crossed
+      if (state.hiddenLog.length === CAPTURE_WARN_AT) {
+        showAlert(`Keylogger simulation has silently captured ${CAPTURE_WARN_AT} keystrokes. In a real attack, this data would be exfiltrated to a remote server.`);
+        addLog(`⚠ Capture threshold reached: ${CAPTURE_WARN_AT} keys stored in hidden buffer`, 'danger');
+      }
+
+      updateHiddenLog();
+    }
+
+    updateSpeedMeter();
+    updateStats();
+  });
+
+  /** Update visible panel on every input event */
+  inputArea.addEventListener('input', function() {
+    updateVisibleLog();
+    updateStats();
+  });
+
+  /** Toggle keylogger simulation on/off */
+  toggleKL.addEventListener('change', function() {
+    state.keyloggerActive = this.checked;
+
+    if (state.keyloggerActive) {
+      // Attack mode
+      modeBadge.textContent = '⚠ ATTACK SIM';
+      modeBadge.className   = 'mode-badge attack';
+      inputArea.classList.add('compromised');
+      addLog('🔴 Keylogger simulation ENABLED. Covert capture active.', 'danger');
+      showAlert('Keylogger simulation is now ACTIVE. All keystrokes will be secretly recorded. This is a controlled educational demo only.');
+    } else {
+      // Safe mode
+      modeBadge.textContent = 'SAFE MODE';
+      modeBadge.className   = 'mode-badge safe';
+      inputArea.classList.remove('compromised');
+      addLog('🟢 Keylogger simulation DISABLED. Safe mode restored.', 'ok');
+      // Keep alert visible if data was already captured
+      if (state.hiddenLog.length === 0) hideAlert();
+      else addLog('ℹ Previously captured data still visible in panel below.', 'info');
+    }
+
+    updateHiddenLog();
+  });
+
+  /** Manual detection scan button */
+  detectBtn.addEventListener('click', function() {
+    addLog('→ Manual detection scan initiated...', 'info');
+    runDetection();
+  });
+
+  /** Reset everything */
+  resetBtn.addEventListener('click', function() {
+    // Clear state
+    state.keyloggerActive   = false;
+    state.hiddenLog         = [];
+    state.keyTimestamps     = [];
+    state.burstCount        = 0;
+    state.startTime         = null;
+    state.totalKeystrokes   = 0;
+
+    // Reset UI
+    inputArea.value         = '';
+    toggleKL.checked        = false;
+    modeBadge.textContent   = 'SAFE MODE';
+    modeBadge.className     = 'mode-badge safe';
+    inputArea.classList.remove('compromised');
+    speedBar.style.width    = '0%';
+    speedBar.classList.remove('fast');
+    wpmDisplay.textContent  = '0 WPM';
+    ksDisplay.textContent   = '0 ks/s';
+
+    hideAlert();
+    updateVisibleLog();
+    updateHiddenLog();
+    updateStats();
+
+    // Reset log
+    logTerminal.innerHTML   = '';
+    addLog('System reset. All data cleared. Safe mode active.', 'ok');
+  });
+
+  // ── Continuous speed meter update every 500ms ─────────────────
+  setInterval(updateSpeedMeter, 500);
+
+  // ── Init ───────────────────────────────────────────────────────
+  addLog('KeyGuard simulation loaded. Toggle keylogger to begin.', 'ok');
+  updateHiddenLog();
+
+</script>
+</body>
+</html>

@@ -27,443 +27,107 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--font-ui);
-      min-height: 100vh;
-      overflow-x: hidden;
-      position: relative;
+      background: var(--bg); color: var(--text); font-family: var(--font-ui);
+      min-height: 100vh; overflow-x: hidden; position: relative;
     }
-
     body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background: repeating-linear-gradient(
-        0deg,
-        transparent,
-        transparent 2px,
-        rgba(0,255,136,0.015) 2px,
-        rgba(0,255,136,0.015) 4px
-      );
-      pointer-events: none;
-      z-index: 999;
+      content: ''; position: fixed; inset: 0;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,136,0.015) 2px, rgba(0,255,136,0.015) 4px);
+      pointer-events: none; z-index: 999;
     }
-
     body::after {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image:
-        linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
-      background-size: 40px 40px;
-      pointer-events: none;
-      z-index: 0;
+      content: ''; position: fixed; inset: 0;
+      background-image: linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+      background-size: 40px 40px; pointer-events: none; z-index: 0;
     }
 
-    .wrapper {
-      position: relative;
-      z-index: 1;
-      max-width: 960px;
-      margin: 0 auto;
-      padding: 2rem 1.5rem 4rem;
-    }
+    .wrapper { position: relative; z-index: 1; max-width: 960px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
 
-    header {
-      text-align: center;
-      padding: 2.5rem 0 2rem;
-    }
-
-    .logo {
-      font-family: var(--font-head);
-      font-size: clamp(1.8rem, 5vw, 3rem);
-      font-weight: 900;
-      letter-spacing: 4px;
-      color: var(--green);
-      text-shadow: 0 0 20px rgba(0,255,136,0.5), 0 0 60px rgba(0,255,136,0.2);
-      animation: flicker 8s infinite;
-    }
-
+    header { text-align: center; padding: 2.5rem 0 2rem; }
+    .logo { font-family: var(--font-head); font-size: clamp(1.8rem, 5vw, 3rem); font-weight: 900; letter-spacing: 4px; color: var(--green); text-shadow: 0 0 20px rgba(0,255,136,0.5), 0 0 60px rgba(0,255,136,0.2); animation: flicker 8s infinite; }
     .logo span { color: var(--cyan); }
+    .tagline { font-family: var(--font-mono); font-size: 0.8rem; color: var(--muted); letter-spacing: 3px; margin-top: 0.5rem; text-transform: uppercase; }
+    .edu-badge { display: inline-block; margin-top: 1rem; padding: 0.3rem 1rem; border: 1px solid var(--yellow); color: var(--yellow); font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 2px; border-radius: 2px; animation: pulse-yellow 3s ease-in-out infinite; }
 
-    .tagline {
-      font-family: var(--font-mono);
-      font-size: 0.8rem;
-      color: var(--muted);
-      letter-spacing: 3px;
-      margin-top: 0.5rem;
-      text-transform: uppercase;
-    }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: 1.5rem; margin-bottom: 1.5rem; position: relative; overflow: hidden; }
+    .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--green), transparent); opacity: 0.4; }
 
-    .edu-badge {
-      display: inline-block;
-      margin-top: 1rem;
-      padding: 0.3rem 1rem;
-      border: 1px solid var(--yellow);
-      color: var(--yellow);
-      font-family: var(--font-mono);
-      font-size: 0.7rem;
-      letter-spacing: 2px;
-      border-radius: 2px;
-      animation: pulse-yellow 3s ease-in-out infinite;
-    }
+    .card-title { font-family: var(--font-head); font-size: 0.65rem; letter-spacing: 3px; color: var(--green); text-transform: uppercase; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+    .card-title .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); box-shadow: 0 0 6px var(--green); }
 
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 1.5rem;
-      margin-bottom: 1.5rem;
-      position: relative;
-      overflow: hidden;
-    }
+    .controls { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1.5rem; align-items: center; }
+    .toggle-wrap { display: flex; align-items: center; gap: 0.75rem; flex: 1; min-width: 220px; }
+    .toggle-label { font-family: var(--font-mono); font-size: 0.8rem; color: var(--text); white-space: nowrap; }
 
-    .card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, var(--green), transparent);
-      opacity: 0.4;
-    }
-
-    .card-title {
-      font-family: var(--font-head);
-      font-size: 0.65rem;
-      letter-spacing: 3px;
-      color: var(--green);
-      text-transform: uppercase;
-      margin-bottom: 1rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .card-title .dot {
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: var(--green);
-      box-shadow: 0 0 6px var(--green);
-    }
-
-    .controls {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-      margin-bottom: 1.5rem;
-      align-items: center;
-    }
-
-    .toggle-wrap {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      flex: 1;
-      min-width: 220px;
-    }
-
-    .toggle-label {
-      font-family: var(--font-mono);
-      font-size: 0.8rem;
-      color: var(--text);
-      white-space: nowrap;
-    }
-
-    .switch {
-      position: relative;
-      width: 54px;
-      height: 28px;
-      flex-shrink: 0;
-    }
+    .switch { position: relative; width: 54px; height: 28px; flex-shrink: 0; }
     .switch input { opacity: 0; width: 0; height: 0; }
-    .slider {
-      position: absolute;
-      inset: 0;
-      background: #1a2530;
-      border: 1px solid var(--border);
-      border-radius: 28px;
-      cursor: pointer;
-      transition: background 0.3s, border-color 0.3s;
-    }
-    .slider::before {
-      content: '';
-      position: absolute;
-      width: 20px; height: 20px;
-      left: 3px; top: 3px;
-      background: var(--muted);
-      border-radius: 50%;
-      transition: transform 0.3s, background 0.3s, box-shadow 0.3s;
-    }
+    .slider { position: absolute; inset: 0; background: #1a2530; border: 1px solid var(--border); border-radius: 28px; cursor: pointer; transition: background 0.3s, border-color 0.3s; }
+    .slider::before { content: ''; position: absolute; width: 20px; height: 20px; left: 3px; top: 3px; background: var(--muted); border-radius: 50%; transition: transform 0.3s, background 0.3s, box-shadow 0.3s; }
     .switch input:checked + .slider { background: rgba(255,45,85,0.15); border-color: var(--red); }
-    .switch input:checked + .slider::before {
-      transform: translateX(26px);
-      background: var(--red);
-      box-shadow: 0 0 10px var(--red);
-    }
+    .switch input:checked + .slider::before { transform: translateX(26px); background: var(--red); box-shadow: 0 0 10px var(--red); }
 
-    .mode-badge {
-      font-family: var(--font-mono);
-      font-size: 0.7rem;
-      padding: 0.25rem 0.75rem;
-      border-radius: 2px;
-      border: 1px solid transparent;
-      letter-spacing: 1px;
-      transition: all 0.3s;
-    }
-    .mode-badge.safe    { border-color: var(--green); color: var(--green); }
-    .mode-badge.attack  { border-color: var(--red); color: var(--red); animation: pulse-red 1s ease-in-out infinite; }
+    .mode-badge { font-family: var(--font-mono); font-size: 0.7rem; padding: 0.25rem 0.75rem; border-radius: 2px; border: 1px solid transparent; letter-spacing: 1px; transition: all 0.3s; }
+    .mode-badge.safe   { border-color: var(--green); color: var(--green); }
+    .mode-badge.attack { border-color: var(--red); color: var(--red); animation: pulse-red 1s ease-in-out infinite; }
 
-    .btn {
-      font-family: var(--font-mono);
-      font-size: 0.75rem;
-      letter-spacing: 1px;
-      padding: 0.5rem 1.2rem;
-      border-radius: 2px;
-      border: 1px solid;
-      cursor: pointer;
-      background: transparent;
-      transition: all 0.2s;
-      text-transform: uppercase;
-    }
+    .btn { font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 1px; padding: 0.5rem 1.2rem; border-radius: 2px; border: 1px solid; cursor: pointer; background: transparent; transition: all 0.2s; text-transform: uppercase; }
     .btn-green { border-color: var(--green); color: var(--green); }
     .btn-green:hover { background: var(--green); color: var(--bg); box-shadow: 0 0 20px rgba(0,255,136,0.3); }
-    .btn-red   { border-color: var(--red); color: var(--red); }
-    .btn-red:hover   { background: var(--red); color: #fff; box-shadow: 0 0 20px rgba(255,45,85,0.3); }
     .btn-cyan  { border-color: var(--cyan); color: var(--cyan); }
     .btn-cyan:hover  { background: var(--cyan); color: var(--bg); box-shadow: 0 0 20px rgba(0,212,255,0.3); }
 
-    .typing-area {
-      width: 100%;
-      background: #08111a;
-      border: 1px solid var(--border);
-      border-radius: 3px;
-      color: var(--green);
-      font-family: var(--font-mono);
-      font-size: 1rem;
-      line-height: 1.7;
-      padding: 1rem;
-      resize: vertical;
-      min-height: 120px;
-      outline: none;
-      caret-color: var(--green);
-      transition: border-color 0.3s, box-shadow 0.3s;
-    }
-    .typing-area:focus {
-      border-color: var(--green-dim);
-      box-shadow: 0 0 0 2px rgba(0,255,136,0.1), inset 0 0 20px rgba(0,255,136,0.03);
-    }
-    .typing-area.compromised {
-      border-color: var(--red);
-      box-shadow: 0 0 0 2px rgba(255,45,85,0.1), inset 0 0 20px rgba(255,45,85,0.05);
-      caret-color: var(--red);
-    }
+    .typing-area { width: 100%; background: #08111a; border: 1px solid var(--border); border-radius: 3px; color: var(--green); font-family: var(--font-mono); font-size: 1rem; line-height: 1.7; padding: 1rem; resize: vertical; min-height: 120px; outline: none; caret-color: var(--green); transition: border-color 0.3s, box-shadow 0.3s; }
+    .typing-area:focus { border-color: var(--green-dim); box-shadow: 0 0 0 2px rgba(0,255,136,0.1), inset 0 0 20px rgba(0,255,136,0.03); }
+    .typing-area.compromised { border-color: var(--red); box-shadow: 0 0 0 2px rgba(255,45,85,0.1), inset 0 0 20px rgba(255,45,85,0.05); caret-color: var(--red); }
     .typing-area::placeholder { color: var(--muted); }
 
-    .stats-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-      margin-top: 0.75rem;
-    }
-
-    .stat-pill {
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      padding: 0.3rem 0.75rem;
-      background: #0a1520;
-      border: 1px solid var(--border);
-      border-radius: 2px;
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-    }
+    .stats-row { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 0.75rem; }
+    .stat-pill { font-family: var(--font-mono); font-size: 0.72rem; padding: 0.3rem 0.75rem; background: #0a1520; border: 1px solid var(--border); border-radius: 2px; display: flex; align-items: center; gap: 0.4rem; }
     .stat-pill .label { color: var(--muted); }
     .stat-pill .value { color: var(--cyan); font-weight: 600; }
     .stat-pill .value.danger { color: var(--red); }
 
-    .viz-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-    }
-
+    .viz-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
     @media (max-width: 600px) { .viz-grid { grid-template-columns: 1fr; } }
 
-    .viz-box {
-      background: #08111a;
-      border: 1px solid var(--border);
-      border-radius: 3px;
-      padding: 0.75rem;
-      min-height: 90px;
-    }
-
-    .viz-box-title {
-      font-family: var(--font-mono);
-      font-size: 0.65rem;
-      letter-spacing: 2px;
-      margin-bottom: 0.5rem;
-      text-transform: uppercase;
-    }
+    .viz-box { background: #08111a; border: 1px solid var(--border); border-radius: 3px; padding: 0.75rem; min-height: 90px; }
+    .viz-box-title { font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 2px; margin-bottom: 0.5rem; text-transform: uppercase; }
     .viz-box-title.user   { color: var(--green); }
     .viz-box-title.hidden { color: var(--red); }
-
-    .viz-content {
-      font-family: var(--font-mono);
-      font-size: 0.8rem;
-      word-break: break-all;
-      min-height: 40px;
-      line-height: 1.6;
-    }
+    .viz-content { font-family: var(--font-mono); font-size: 0.8rem; word-break: break-all; min-height: 40px; line-height: 1.6; }
     .viz-content.user-text   { color: var(--green-dim); }
     .viz-content.hidden-text { color: var(--red); }
-    .viz-content.empty-state { color: var(--muted); font-size: 0.7rem; }
+    .viz-content .empty-state { color: var(--muted); font-size: 0.7rem; }
 
-    .key-chip {
-      display: inline-block;
-      background: rgba(255,45,85,0.12);
-      border: 1px solid rgba(255,45,85,0.3);
-      border-radius: 3px;
-      padding: 0 4px;
-      margin: 1px;
-      font-size: 0.72rem;
-      animation: chip-in 0.15s ease;
-    }
+    .key-chip { display: inline-block; background: rgba(255,45,85,0.12); border: 1px solid rgba(255,45,85,0.3); border-radius: 3px; padding: 0 4px; margin: 1px; font-size: 0.72rem; animation: chip-in 0.15s ease; }
+    @keyframes chip-in { from { opacity:0; transform:scale(0.8); } to { opacity:1; transform:scale(1); } }
 
-    @keyframes chip-in {
-      from { opacity: 0; transform: scale(0.8); }
-      to   { opacity: 1; transform: scale(1); }
-    }
-
-    .alert-box {
-      display: none;
-      background: rgba(255,45,85,0.05);
-      border: 1px solid var(--red);
-      border-radius: 4px;
-      padding: 1rem 1.25rem;
-      margin-bottom: 1.5rem;
-      position: relative;
-      overflow: hidden;
-      animation: alert-in 0.4s ease;
-    }
-
+    .alert-box { display: none; background: rgba(255,45,85,0.05); border: 1px solid var(--red); border-radius: 4px; padding: 1rem 1.25rem; margin-bottom: 1.5rem; position: relative; overflow: hidden; animation: alert-in 0.4s ease; }
     .alert-box.show { display: block; }
-
-    .alert-box::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: repeating-linear-gradient(
-        45deg,
-        transparent,
-        transparent 10px,
-        rgba(255,45,85,0.03) 10px,
-        rgba(255,45,85,0.03) 20px
-      );
-      pointer-events: none;
-    }
-
-    .alert-title {
-      font-family: var(--font-head);
-      font-size: 0.8rem;
-      color: var(--red);
-      letter-spacing: 2px;
-      margin-bottom: 0.5rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
+    .alert-box::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,45,85,0.03) 10px, rgba(255,45,85,0.03) 20px); pointer-events: none; }
+    .alert-title { font-family: var(--font-head); font-size: 0.8rem; color: var(--red); letter-spacing: 2px; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
     .alert-blink { animation: blink 0.8s step-end infinite; }
-
-    .alert-body {
-      font-family: var(--font-mono);
-      font-size: 0.75rem;
-      color: #e86a7a;
-      line-height: 1.6;
-    }
+    .alert-body { font-family: var(--font-mono); font-size: 0.75rem; color: #e86a7a; line-height: 1.6; }
 
     .speed-bar-wrap { margin-top: 0.5rem; }
-    .speed-bar-label {
-      font-family: var(--font-mono);
-      font-size: 0.68rem;
-      color: var(--muted);
-      margin-bottom: 0.3rem;
-    }
-    .speed-bar-track {
-      height: 6px;
-      background: #0a1520;
-      border-radius: 6px;
-      overflow: hidden;
-      border: 1px solid var(--border);
-    }
-    .speed-bar-fill {
-      height: 100%;
-      width: 0%;
-      border-radius: 6px;
-      background: linear-gradient(90deg, var(--green), var(--cyan));
-      transition: width 0.3s ease, background 0.3s;
-    }
+    .speed-bar-label { font-family: var(--font-mono); font-size: 0.68rem; color: var(--muted); margin-bottom: 0.3rem; }
+    .speed-bar-track { height: 6px; background: #0a1520; border-radius: 6px; overflow: hidden; border: 1px solid var(--border); }
+    .speed-bar-fill { height: 100%; width: 0%; border-radius: 6px; background: linear-gradient(90deg, var(--green), var(--cyan)); transition: width 0.3s ease, background 0.3s; }
     .speed-bar-fill.fast { background: linear-gradient(90deg, var(--yellow), var(--red)); }
 
-    .edu-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-      gap: 1rem;
-      margin-top: 0.5rem;
-    }
-
-    .edu-item {
-      background: #08111a;
-      border: 1px solid var(--border);
-      border-radius: 3px;
-      padding: 1rem;
-    }
-
+    .edu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1rem; margin-top: 0.5rem; }
+    .edu-item { background: #08111a; border: 1px solid var(--border); border-radius: 3px; padding: 1rem; }
     .edu-item-icon { font-size: 1.5rem; margin-bottom: 0.5rem; }
-
-    .edu-item-title {
-      font-family: var(--font-head);
-      font-size: 0.65rem;
-      letter-spacing: 2px;
-      color: var(--cyan);
-      margin-bottom: 0.5rem;
-      text-transform: uppercase;
-    }
-
-    .edu-item-body {
-      font-size: 0.78rem;
-      color: var(--muted);
-      line-height: 1.6;
-    }
-
+    .edu-item-title { font-family: var(--font-head); font-size: 0.65rem; letter-spacing: 2px; color: var(--cyan); margin-bottom: 0.5rem; text-transform: uppercase; }
+    .edu-item-body { font-size: 0.78rem; color: var(--muted); line-height: 1.6; }
     .protect-list { list-style: none; margin-top: 0.5rem; }
-    .protect-list li {
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      color: var(--green-dim);
-      padding: 0.2rem 0;
-      display: flex;
-      gap: 0.4rem;
-    }
+    .protect-list li { font-family: var(--font-mono); font-size: 0.72rem; color: var(--green-dim); padding: 0.2rem 0; display: flex; gap: 0.4rem; }
     .protect-list li::before { content: '>'; color: var(--muted); }
 
-    .terminal {
-      background: #05090e;
-      border: 1px solid var(--border);
-      border-radius: 3px;
-      padding: 0.75rem;
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      max-height: 140px;
-      overflow-y: auto;
-      line-height: 1.7;
-    }
-
+    .terminal { background: #05090e; border: 1px solid var(--border); border-radius: 3px; padding: 0.75rem; font-family: var(--font-mono); font-size: 0.72rem; max-height: 140px; overflow-y: auto; line-height: 1.7; }
     .terminal::-webkit-scrollbar { width: 4px; }
     .terminal::-webkit-scrollbar-track { background: transparent; }
     .terminal::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-
     .log-line { display: flex; gap: 0.5rem; }
     .log-time { color: var(--muted); flex-shrink: 0; }
     .log-msg.info   { color: var(--cyan); }
@@ -471,63 +135,27 @@
     .log-msg.danger { color: var(--red); }
     .log-msg.ok     { color: var(--green); }
 
-    @keyframes flicker {
-      0%,95%,100% { opacity: 1; }
-      96% { opacity: 0.85; }
-      97% { opacity: 1; }
-      98% { opacity: 0.7; }
-    }
+    @keyframes flicker { 0%,95%,100%{opacity:1;} 96%{opacity:0.85;} 97%{opacity:1;} 98%{opacity:0.7;} }
+    @keyframes pulse-yellow { 0%,100%{box-shadow:0 0 5px rgba(255,210,0,0.2);} 50%{box-shadow:0 0 15px rgba(255,210,0,0.5);} }
+    @keyframes pulse-red { 0%,100%{opacity:1;} 50%{opacity:0.6;} }
+    @keyframes alert-in { from{transform:translateY(-8px);opacity:0;} to{transform:translateY(0);opacity:1;} }
+    @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0;} }
 
-    @keyframes pulse-yellow {
-      0%,100% { box-shadow: 0 0 5px rgba(255,210,0,0.2); }
-      50%      { box-shadow: 0 0 15px rgba(255,210,0,0.5); }
-    }
-
-    @keyframes pulse-red {
-      0%,100% { opacity: 1; }
-      50%      { opacity: 0.6; }
-    }
-
-    @keyframes alert-in {
-      from { transform: translateY(-8px); opacity: 0; }
-      to   { transform: translateY(0);   opacity: 1; }
-    }
-
-    @keyframes blink {
-      0%,100% { opacity: 1; }
-      50%      { opacity: 0; }
-    }
-
-    footer {
-      text-align: center;
-      font-family: var(--font-mono);
-      font-size: 0.65rem;
-      color: var(--muted);
-      letter-spacing: 2px;
-      padding-top: 2rem;
-      border-top: 1px solid var(--border);
-      margin-top: 2rem;
-    }
+    footer { text-align: center; font-family: var(--font-mono); font-size: 0.65rem; color: var(--muted); letter-spacing: 2px; padding-top: 2rem; border-top: 1px solid var(--border); margin-top: 2rem; }
   </style>
 </head>
 <body>
-
 <div class="wrapper">
 
   <header>
     <div class="logo">KEY<span>GUARD</span></div>
-    <div class="tagline">Keylogger Detector · Simulation</div>
+    <div class="tagline">Keylogger Detector · Educational Simulation</div>
     <div class="edu-badge">⚠ SIMULATION ONLY — NO REAL MALWARE — BROWSER MEMORY ONLY</div>
   </header>
 
   <div class="alert-box" id="alertBox">
-    <div class="alert-title">
-      <span class="alert-blink">■</span>
-      ⚠ POTENTIAL KEYLOGGER ACTIVITY DETECTED
-    </div>
-    <div class="alert-body" id="alertBody">
-      Suspicious keystroke capture behavior has been identified.
-    </div>
+    <div class="alert-title"><span class="alert-blink">■</span> ⚠ POTENTIAL KEYLOGGER ACTIVITY DETECTED</div>
+    <div class="alert-body" id="alertBody">Suspicious keystroke capture behavior has been identified.</div>
   </div>
 
   <div class="card">
@@ -544,24 +172,15 @@
       <button class="btn btn-cyan" id="detectBtn">⚡ Run Detection</button>
       <button class="btn btn-green" id="resetBtn">↺ Reset All</button>
     </div>
-
     <div class="speed-bar-wrap">
       <div class="speed-bar-label">Typing Speed: <span id="wpmDisplay">0 WPM</span> &nbsp;|&nbsp; Keystroke Velocity: <span id="ksDisplay">0 ks/s</span></div>
-      <div class="speed-bar-track">
-        <div class="speed-bar-fill" id="speedBar"></div>
-      </div>
+      <div class="speed-bar-track"><div class="speed-bar-fill" id="speedBar"></div></div>
     </div>
   </div>
 
   <div class="card">
     <div class="card-title"><span class="dot"></span> User Input Terminal</div>
-    <textarea
-      class="typing-area"
-      id="inputArea"
-      placeholder="// Start typing here... keystrokes are monitored in simulation mode"
-      rows="5"
-    ></textarea>
-
+    <textarea class="typing-area" id="inputArea" placeholder="// Start typing here... keystrokes are monitored in simulation mode" rows="5"></textarea>
     <div class="stats-row">
       <div class="stat-pill"><span class="label">chars:</span><span class="value" id="charCount">0</span></div>
       <div class="stat-pill"><span class="label">words:</span><span class="value" id="wordCount">0</span></div>
@@ -575,15 +194,11 @@
     <div class="viz-grid">
       <div class="viz-box">
         <div class="viz-box-title user">✓ What You See (Visible Input)</div>
-        <div class="viz-content user-text" id="visibleLog">
-          <span class="empty-state">// Waiting for input...</span>
-        </div>
+        <div class="viz-content user-text" id="visibleLog"><span class="empty-state">// Waiting for input...</span></div>
       </div>
       <div class="viz-box">
         <div class="viz-box-title hidden">⚑ What System Secretly Recorded [SIMULATION]</div>
-        <div class="viz-content hidden-text" id="hiddenLog">
-          <span class="empty-state">// Simulation disabled — toggle to enable</span>
-        </div>
+        <div class="viz-content hidden-text" id="hiddenLog"><span class="empty-state">// Simulation disabled — toggle to enable</span></div>
       </div>
     </div>
   </div>
@@ -598,27 +213,16 @@
   <div class="card">
     <div class="card-title"><span class="dot"></span> Educational Reference — Understanding Keyloggers</div>
     <div class="edu-grid">
-
       <div class="edu-item">
         <div class="edu-item-icon">🔍</div>
         <div class="edu-item-title">What is a Keylogger?</div>
-        <div class="edu-item-body">
-          A keylogger is software (or hardware) that secretly records every keystroke you make.
-          Attackers use them to steal passwords, credit card numbers, and private messages —
-          all without your knowledge.
-        </div>
+        <div class="edu-item-body">A keylogger is software (or hardware) that secretly records every keystroke you make. Attackers use them to steal passwords, credit card numbers, and private messages — all without your knowledge.</div>
       </div>
-
       <div class="edu-item">
         <div class="edu-item-icon">☠️</div>
         <div class="edu-item-title">Why Are They Dangerous?</div>
-        <div class="edu-item-body">
-          Keyloggers silently operate in the background. By the time you notice, your
-          banking credentials, emails, and personal data may already be in criminal hands.
-          They're often bundled with legitimate-looking software.
-        </div>
+        <div class="edu-item-body">Keyloggers silently operate in the background. By the time you notice, your banking credentials, emails, and personal data may already be in criminal hands. They're often bundled with legitimate-looking software.</div>
       </div>
-
       <div class="edu-item">
         <div class="edu-item-icon">🛡️</div>
         <div class="edu-item-title">How to Protect Yourself</div>
@@ -632,18 +236,11 @@
           <li>Regularly scan for malware</li>
         </ul>
       </div>
-
       <div class="edu-item">
         <div class="edu-item-icon">🔬</div>
         <div class="edu-item-title">How This Simulation Works</div>
-        <div class="edu-item-body">
-          This demo mimics keylogger behavior entirely inside your browser's memory —
-          nothing leaves your device. It illustrates how covert keystroke logging
-          could look from a security monitoring perspective. No actual malicious
-          code is used here.
-        </div>
+        <div class="edu-item-body">This demo mimics keylogger behavior entirely inside your browser's memory — nothing leaves your device. It illustrates how covert keystroke logging could look from a security monitoring perspective. No actual malicious code is used here.</div>
       </div>
-
     </div>
   </div>
 
@@ -652,322 +249,246 @@
 
 <script>
   /* ═══════════════════════════════════════════════════════════════
-     KeyGuard — Keylogger Detector Simulation
-     Mobile fix: uses both keydown + input event diffing to support
-     virtual/soft keyboards that don't fire keydown reliably.
-     Everything runs in browser memory. No data leaves the device.
+     KeyGuard — Clean single-listener approach
+     
+     ROOT CAUSE OF DOUBLE-COUNTING:
+     The previous version had BOTH keydown AND input event listeners
+     both calling handleKeystroke(). The de-dupe flag didn't work
+     reliably because both listeners ran in the same JS tick.
+
+     FIX: Remove keydown entirely for capture. Use ONLY the input
+     event. Diff old vs new textarea value to extract exactly what
+     changed. Works on desktop AND mobile — zero double-counting.
   ═══════════════════════════════════════════════════════════════ */
 
   const state = {
     keyloggerActive: false,
-    hiddenLog: [],
-    keyTimestamps: [],
-    burstCount: 0,
-    startTime: null,
+    hiddenLog:       [],
+    keyTimestamps:   [],
+    burstCount:      0,
+    startTime:       null,
     totalKeystrokes: 0,
-    prevValue: '',          // ← NEW: tracks previous textarea value for mobile diffing
+    prevValue:       '',   // snapshot of textarea value before each input
   };
 
-  const BURST_WINDOW_MS  = 500;
-  const BURST_THRESHOLD  = 8;
-  const CAPTURE_WARN_AT  = 5;
+  const BURST_WINDOW_MS = 500;
+  const BURST_THRESHOLD = 8;
+  const CAPTURE_WARN_AT = 5;
 
-  const toggleKL      = document.getElementById('toggleKL');
-  const modeBadge     = document.getElementById('modeBadge');
-  const detectBtn     = document.getElementById('detectBtn');
-  const resetBtn      = document.getElementById('resetBtn');
-  const inputArea     = document.getElementById('inputArea');
-  const alertBox      = document.getElementById('alertBox');
-  const alertBody     = document.getElementById('alertBody');
-  const visibleLog    = document.getElementById('visibleLog');
-  const hiddenLog     = document.getElementById('hiddenLog');
-  const logTerminal   = document.getElementById('logTerminal');
-  const charCount     = document.getElementById('charCount');
-  const wordCount     = document.getElementById('wordCount');
-  const capturedCount = document.getElementById('capturedCount');
-  const burstCountEl  = document.getElementById('burstCount');
-  const speedBar      = document.getElementById('speedBar');
-  const wpmDisplay    = document.getElementById('wpmDisplay');
-  const ksDisplay     = document.getElementById('ksDisplay');
+  const toggleKL     = document.getElementById('toggleKL');
+  const modeBadge    = document.getElementById('modeBadge');
+  const detectBtn    = document.getElementById('detectBtn');
+  const resetBtn     = document.getElementById('resetBtn');
+  const inputArea    = document.getElementById('inputArea');
+  const alertBox     = document.getElementById('alertBox');
+  const alertBody    = document.getElementById('alertBody');
+  const visibleLogEl = document.getElementById('visibleLog');
+  const hiddenLogEl  = document.getElementById('hiddenLog');
+  const logTerminal  = document.getElementById('logTerminal');
+  const charCountEl  = document.getElementById('charCount');
+  const wordCountEl  = document.getElementById('wordCount');
+  const capturedEl   = document.getElementById('capturedCount');
+  const burstEl      = document.getElementById('burstCount');
+  const speedBar     = document.getElementById('speedBar');
+  const wpmDisplay   = document.getElementById('wpmDisplay');
+  const ksDisplay    = document.getElementById('ksDisplay');
 
-  function timestamp() {
+  /* ── Helpers ──────────────────────────────────────────────── */
+  function ts() {
     const n = new Date();
-    return [n.getHours(), n.getMinutes(), n.getSeconds()]
-      .map(v => String(v).padStart(2, '0')).join(':');
+    return [n.getHours(),n.getMinutes(),n.getSeconds()].map(v=>String(v).padStart(2,'0')).join(':');
   }
 
-  function addLog(msg, type = 'info') {
-    const line = document.createElement('div');
-    line.className = 'log-line';
-    line.innerHTML = `<span class="log-time">[${timestamp()}]</span><span class="log-msg ${type}">${msg}</span>`;
-    logTerminal.appendChild(line);
+  function addLog(msg, type='info') {
+    const d = document.createElement('div');
+    d.className = 'log-line';
+    d.innerHTML = `<span class="log-time">[${ts()}]</span><span class="log-msg ${type}">${msg}</span>`;
+    logTerminal.appendChild(d);
     logTerminal.scrollTop = logTerminal.scrollHeight;
   }
 
-  function showAlert(msg) {
-    alertBody.textContent = msg;
-    alertBox.classList.add('show');
+  function showAlert(msg) { alertBody.textContent = msg; alertBox.classList.add('show'); }
+  function hideAlert()    { alertBox.classList.remove('show'); }
+
+  function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  function refreshVisibleLog() {
+    const t = inputArea.value;
+    visibleLogEl.innerHTML = t ? esc(t) : '<span class="empty-state">// Waiting for input...</span>';
   }
 
-  function hideAlert() {
-    alertBox.classList.remove('show');
-  }
-
-  function updateVisibleLog() {
-    const text = inputArea.value;
-    if (!text) {
-      visibleLog.innerHTML = '<span class="empty-state">// Waiting for input...</span>';
-    } else {
-      visibleLog.textContent = text;
-    }
-  }
-
-  function updateHiddenLog() {
+  function refreshHiddenLog() {
     if (!state.keyloggerActive || state.hiddenLog.length === 0) {
-      hiddenLog.innerHTML = state.keyloggerActive
+      hiddenLogEl.innerHTML = state.keyloggerActive
         ? '<span class="empty-state">// Listening... start typing</span>'
         : '<span class="empty-state">// Simulation disabled — toggle to enable</span>';
       return;
     }
-    hiddenLog.innerHTML = state.hiddenLog.map(k => `<span class="key-chip">${escapeHTML(k)}</span>`).join('');
+    hiddenLogEl.innerHTML = state.hiddenLog.map(k=>`<span class="key-chip">${esc(k)}</span>`).join('');
   }
 
-  function escapeHTML(str) {
-    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  function refreshStats() {
+    const t = inputArea.value;
+    charCountEl.textContent = t.length;
+    wordCountEl.textContent = t.trim() ? t.trim().split(/\s+/).length : 0;
+    capturedEl.textContent  = state.hiddenLog.length;
+    burstEl.textContent     = state.burstCount;
   }
 
-  function updateStats() {
-    const text = inputArea.value;
-    charCount.textContent     = text.length;
-    wordCount.textContent     = text.trim() ? text.trim().split(/\s+/).length : 0;
-    capturedCount.textContent = state.hiddenLog.length;
-    burstCountEl.textContent  = state.burstCount;
-  }
-
-  function updateSpeedMeter() {
+  function refreshSpeed() {
     if (!state.startTime || state.totalKeystrokes === 0) {
-      wpmDisplay.textContent = '0 WPM';
-      ksDisplay.textContent  = '0 ks/s';
-      speedBar.style.width   = '0%';
-      speedBar.classList.remove('fast');
-      return;
+      wpmDisplay.textContent='0 WPM'; ksDisplay.textContent='0 ks/s';
+      speedBar.style.width='0%'; speedBar.classList.remove('fast'); return;
     }
-    const elapsedMin = (Date.now() - state.startTime) / 60000;
-    const wpm = Math.round((state.totalKeystrokes / 5) / elapsedMin);
-    const now = Date.now();
-    const recentKeys = state.keyTimestamps.filter(t => now - t < 1000).length;
+    const mins = (Date.now()-state.startTime)/60000;
+    const wpm  = Math.round((state.totalKeystrokes/5)/mins);
+    const now  = Date.now();
+    const ks   = state.keyTimestamps.filter(t=>now-t<1000).length;
     wpmDisplay.textContent = `${wpm} WPM`;
-    ksDisplay.textContent  = `${recentKeys} ks/s`;
-    const pct = Math.min(wpm, 100);
-    speedBar.style.width = `${pct}%`;
-    speedBar.classList.toggle('fast', wpm > 60);
+    ksDisplay.textContent  = `${ks} ks/s`;
+    speedBar.style.width   = `${Math.min(wpm,100)}%`;
+    speedBar.classList.toggle('fast', wpm>60);
   }
 
-  /* ─── Core keystroke handler ─────────────────────────────────────
-     Called with a key label string (e.g. "a", "B", "[Enter]").
-     Works for both physical keys (via keydown) and
-     soft keyboard input (via input event diffing).
-  ─────────────────────────────────────────────────────────────── */
-  function handleKeystroke(label) {
+  /* ── Core keystroke handler ───────────────────────────────── */
+  function onKeystroke(label) {
     if (!state.startTime) state.startTime = Date.now();
     state.totalKeystrokes++;
 
     const now = Date.now();
     state.keyTimestamps.push(now);
+    // trim to last 2 seconds
+    while (state.keyTimestamps.length && now - state.keyTimestamps[0] > 2000) state.keyTimestamps.shift();
 
-    // Keep only last 2 seconds
-    while (state.keyTimestamps.length && now - state.keyTimestamps[0] > 2000) {
-      state.keyTimestamps.shift();
-    }
-
-    // Burst detection
-    const recentBurst = state.keyTimestamps.filter(t => now - t < BURST_WINDOW_MS).length;
-    if (recentBurst >= BURST_THRESHOLD) {
+    // burst detection
+    const burst = state.keyTimestamps.filter(t => now-t < BURST_WINDOW_MS).length;
+    if (burst >= BURST_THRESHOLD) {
       state.burstCount++;
-      addLog(`⚡ Rapid burst detected: ${recentBurst} keys in ${BURST_WINDOW_MS}ms`, 'warn');
-      if (state.keyloggerActive) {
-        showAlert(`Rapid keystroke burst (${recentBurst} keys/${BURST_WINDOW_MS}ms) recorded by hidden logger.`);
-      }
+      addLog(`⚡ Rapid burst: ${burst} keys in ${BURST_WINDOW_MS}ms`, 'warn');
+      if (state.keyloggerActive) showAlert(`Burst of ${burst} keys/${BURST_WINDOW_MS}ms recorded by hidden logger.`);
     }
 
-    // Covert capture
+    // covert capture
     if (state.keyloggerActive) {
       state.hiddenLog.push(label);
-
       if (state.hiddenLog.length === CAPTURE_WARN_AT) {
-        showAlert(`Keylogger simulation has silently captured ${CAPTURE_WARN_AT} keystrokes. In a real attack, this data would be exfiltrated to a remote server.`);
-        addLog(`⚠ Capture threshold reached: ${CAPTURE_WARN_AT} keys stored in hidden buffer`, 'danger');
+        showAlert(`Hidden logger silently captured ${CAPTURE_WARN_AT} keystrokes. In a real attack this would be sent to a remote server.`);
+        addLog(`⚠ Capture threshold hit: ${CAPTURE_WARN_AT} keys in hidden buffer`, 'danger');
       }
-
-      updateHiddenLog();
+      refreshHiddenLog();
     }
 
-    updateSpeedMeter();
-    updateStats();
+    refreshSpeed();
+    refreshStats();
   }
 
-  /* ─── keydown: handles physical / desktop keyboards ─────────────
-     Also fires on some mobile keyboards but NOT all.
+  /* ── THE ONLY LISTENER — input event diff ─────────────────────
+     
+     Why only input, not keydown?
+     - keydown fires BEFORE the textarea value changes, so you
+       can read the key from e.key. That works fine on desktop.
+     - On Android/iOS soft keyboards, keydown either doesn't fire
+       or fires with e.key === "Unidentified" — useless for capture.
+     - The input event fires AFTER the value has changed, on ALL
+       devices and ALL keyboards, every single time.
+
+     By diffing prevValue → current value we know EXACTLY what
+     was typed (including autocorrect replacements, swipe words,
+     pastes, emoji, backspaces) — no guessing from e.key needed.
+     And because there's only ONE listener, nothing is ever counted twice.
   ─────────────────────────────────────────────────────────────── */
-  inputArea.addEventListener('keydown', function(e) {
-    // Skip modifier-only keys
-    if (['Shift','Control','Alt','Meta','CapsLock','Tab'].includes(e.key)) return;
+  inputArea.addEventListener('input', function() {
+    const newVal = inputArea.value;
+    const oldVal = state.prevValue;
 
-    // On mobile, keydown may fire with key === "Unidentified"
-    // We mark this event as "handled by keydown" so input event
-    // doesn't double-count it — UNLESS it's Unidentified (mobile).
-    if (e.key !== 'Unidentified') {
-      e._handledByKeydown = true;
-      const label = e.key.length === 1 ? e.key : `[${e.key}]`;
-      handleKeystroke(label);
+    /* Compute the edit: find common prefix and common suffix.
+       What's in between those two boundaries is what changed. */
+    let lo = 0;
+    const minLen = Math.min(oldVal.length, newVal.length);
+    while (lo < minLen && oldVal[lo] === newVal[lo]) lo++;
+
+    let oldHi = oldVal.length;
+    let newHi = newVal.length;
+    while (oldHi > lo && newHi > lo && oldVal[oldHi-1] === newVal[newHi-1]) { oldHi--; newHi--; }
+
+    const deleted  = oldHi - lo;          // number of chars removed
+    const inserted = newVal.slice(lo, newHi); // chars added
+
+    // Emit one event per deleted character
+    for (let i = 0; i < deleted; i++) onKeystroke('[Del]');
+
+    // Emit one event per inserted character
+    for (const ch of inserted) {
+      onKeystroke(ch === '\n' ? '[Enter]' : ch);
     }
-    // If key === 'Unidentified', we let the input event handle it below
-  });
-
-  /* ─── input: the mobile-safe fallback ────────────────────────────
-     Fires reliably on ALL keyboards (physical + virtual/soft).
-     We diff the new value vs the previous value to figure out
-     what characters were actually added or removed.
-  ─────────────────────────────────────────────────────────────── */
-  inputArea.addEventListener('input', function(e) {
-    const newVal  = inputArea.value;
-    const oldVal  = state.prevValue;
-
-    // Calculate diff
-    const added   = newVal.length - oldVal.length;
-
-    if (added > 0) {
-      // Characters were inserted — find where
-      // Simple approach: compare char by char from the end
-      const insertedChars = newVal.slice(oldVal.length - newVal.length + added, newVal.length);
-
-      // Check if keydown already handled this (desktop path)
-      // On desktop, keydown fires with a real key value — we skip here.
-      // On mobile, keydown fires with "Unidentified" — so we handle here.
-      // We use inputType to distinguish: mobile soft keyboards set inputType
-      const isMobileInput = !e.inputType || e.inputType.startsWith('insert');
-
-      // Only use input-event path if keydown didn't already fire a real key
-      // We detect this by checking if the last keydown was "Unidentified" or didn't fire at all
-      // Reliable cross-platform approach: always use input event, but de-dupe with a flag
-      if (!inputArea._lastKeydownWasReal) {
-        for (const ch of insertedChars) {
-          const label = ch === '\n' ? '[Enter]' : ch;
-          handleKeystroke(label);
-        }
-      }
-    } else if (added < 0) {
-      // Characters were deleted
-      if (!inputArea._lastKeydownWasReal && state.keyloggerActive) {
-        const count = Math.abs(added);
-        for (let i = 0; i < count; i++) {
-          handleKeystroke('[Backspace]');
-        }
-      }
-    }
-
-    // Reset the flag — it only covers one input event per keydown
-    inputArea._lastKeydownWasReal = false;
 
     state.prevValue = newVal;
-    updateVisibleLog();
-    updateStats();
+    refreshVisibleLog();
+    refreshStats();
   });
 
-  /* ─── Patch keydown to set de-dupe flag ─────────────────────────
-     If keydown fired a real (non-Unidentified) key, the input
-     event should skip that keystroke to avoid double-counting.
-  ─────────────────────────────────────────────────────────────── */
-  inputArea.addEventListener('keydown', function(e) {
-    if (!['Shift','Control','Alt','Meta','CapsLock','Tab'].includes(e.key) && e.key !== 'Unidentified') {
-      inputArea._lastKeydownWasReal = true;
-    }
-  }, true); // capture phase so it runs before the bubble-phase listener above
-
-  function runDetection() {
-    const issues = [];
-
-    if (state.keyloggerActive && state.hiddenLog.length >= CAPTURE_WARN_AT) {
-      issues.push(`Hidden keystroke buffer contains ${state.hiddenLog.length} captured characters with no user notification.`);
-    }
-
-    if (state.burstCount > 0) {
-      issues.push(`Rapid keystroke bursts detected: ${state.burstCount} event(s). Rate exceeds normal typing velocity.`);
-    }
-
-    if (state.keyloggerActive && state.hiddenLog.length > 0) {
-      issues.push(`Keylogger simulation is active. All keystrokes are being covertly recorded in background memory.`);
-    }
-
-    if (issues.length > 0) {
-      showAlert(issues.join(' | '));
-      addLog('⚠ THREAT DETECTED: ' + issues[0], 'danger');
-      issues.slice(1).forEach(i => addLog('  └─ ' + i, 'warn'));
-    } else {
-      hideAlert();
-      addLog('✓ Scan complete. No suspicious activity found.', 'ok');
-    }
-  }
-
+  /* ── Toggle ──────────────────────────────────────────────── */
   toggleKL.addEventListener('change', function() {
     state.keyloggerActive = this.checked;
-
     if (state.keyloggerActive) {
       modeBadge.textContent = '⚠ ATTACK SIM';
       modeBadge.className   = 'mode-badge attack';
       inputArea.classList.add('compromised');
       addLog('🔴 Keylogger simulation ENABLED. Covert capture active.', 'danger');
-      showAlert('Keylogger simulation is now ACTIVE. All keystrokes will be secretly recorded.');
+      showAlert('Keylogger simulation ACTIVE. All keystrokes will be secretly recorded. Educational demo only.');
     } else {
       modeBadge.textContent = 'SAFE MODE';
       modeBadge.className   = 'mode-badge safe';
       inputArea.classList.remove('compromised');
       addLog('🟢 Keylogger simulation DISABLED. Safe mode restored.', 'ok');
       if (state.hiddenLog.length === 0) hideAlert();
-      else addLog('ℹ Previously captured data still visible in panel below.', 'info');
+      else addLog('ℹ Previously captured data still visible below.', 'info');
     }
-
-    updateHiddenLog();
+    refreshHiddenLog();
   });
 
+  /* ── Detection ───────────────────────────────────────────── */
   detectBtn.addEventListener('click', function() {
     addLog('→ Manual detection scan initiated...', 'info');
-    runDetection();
+    const issues = [];
+    if (state.keyloggerActive && state.hiddenLog.length >= CAPTURE_WARN_AT)
+      issues.push(`Hidden buffer has ${state.hiddenLog.length} captured chars with no user notification.`);
+    if (state.burstCount > 0)
+      issues.push(`Rapid burst events: ${state.burstCount}. Exceeds normal typing velocity.`);
+    if (state.keyloggerActive && state.hiddenLog.length > 0)
+      issues.push(`Keylogger active — all keystrokes covertly recorded in memory.`);
+
+    if (issues.length) {
+      showAlert(issues.join(' | '));
+      addLog('⚠ THREAT DETECTED: ' + issues[0], 'danger');
+      issues.slice(1).forEach(i => addLog('  └─ '+i, 'warn'));
+    } else {
+      hideAlert();
+      addLog('✓ Scan complete. No suspicious activity found.', 'ok');
+    }
   });
 
+  /* ── Reset ───────────────────────────────────────────────── */
   resetBtn.addEventListener('click', function() {
-    state.keyloggerActive   = false;
-    state.hiddenLog         = [];
-    state.keyTimestamps     = [];
-    state.burstCount        = 0;
-    state.startTime         = null;
-    state.totalKeystrokes   = 0;
-    state.prevValue         = '';
-
-    inputArea.value         = '';
-    inputArea._lastKeydownWasReal = false;
-    toggleKL.checked        = false;
-    modeBadge.textContent   = 'SAFE MODE';
-    modeBadge.className     = 'mode-badge safe';
+    Object.assign(state, { keyloggerActive:false, hiddenLog:[], keyTimestamps:[], burstCount:0, startTime:null, totalKeystrokes:0, prevValue:'' });
+    inputArea.value       = '';
+    toggleKL.checked      = false;
+    modeBadge.textContent = 'SAFE MODE';
+    modeBadge.className   = 'mode-badge safe';
     inputArea.classList.remove('compromised');
-    speedBar.style.width    = '0%';
+    speedBar.style.width  = '0%';
     speedBar.classList.remove('fast');
-    wpmDisplay.textContent  = '0 WPM';
-    ksDisplay.textContent   = '0 ks/s';
-
+    wpmDisplay.textContent = '0 WPM';
+    ksDisplay.textContent  = '0 ks/s';
     hideAlert();
-    updateVisibleLog();
-    updateHiddenLog();
-    updateStats();
-
-    logTerminal.innerHTML   = '';
+    refreshVisibleLog(); refreshHiddenLog(); refreshStats();
+    logTerminal.innerHTML = '';
     addLog('System reset. All data cleared. Safe mode active.', 'ok');
   });
 
-  setInterval(updateSpeedMeter, 500);
-
+  setInterval(refreshSpeed, 500);
   addLog('KeyGuard simulation loaded. Toggle keylogger to begin.', 'ok');
-  updateHiddenLog();
+  refreshHiddenLog();
 </script>
 </body>
 </html>
